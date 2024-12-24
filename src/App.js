@@ -6,9 +6,16 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import HomePage from './pages/HomePage'
 import { AuthProvider, useAuth} from './contexts/AuthContext';
+import {ToastContainer} from 'react-toastify'
+import 'react-toastify/ReactToastify.css';
+
+
+
 const ProtectedRoute = ({ children }) => {
 const { auth} = useAuth();
+
 return auth.user? children: <Navigate to='/login' />;
+
 }
 
 const App = () => {
@@ -24,7 +31,9 @@ return(
         <HomePage/>
       </ProtectedRoute>
      }/>
+     
     </Routes>
+    <ToastContainer/>
  </Router>
 </AuthProvider>
 )

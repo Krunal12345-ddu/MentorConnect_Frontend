@@ -2,27 +2,87 @@ import React,{useState} from 'react'
 import {useNavigate,Link} from 'react-router-dom';
 import './Signup.css';
 import { useAuth } from '../contexts/AuthContext';
+import { toast } from 'react-toastify';
 const Signup = () => {
   const [name,setName]=useState('');
   const [email,setEmail]=useState('');
   const[password,setPassword]=useState('');
   const[otp,setOtp]=useState('');
   const[role,setRole]=useState('Student');
+  const[loading,setLoading]=useState(false);
 
   const {login}=useAuth();
   const navigate=useNavigate();
 
-  const handleSubmit=(e)=>{
-  e.preventdefault();
-  const userData={email,role};
-  login(userData);
-  navigate('/');
+  const handleSubmit= async (e)=>{
+  e.preventDefault();
+   if(!name||!email||!password||!otp){
+    toast.error('All fields are required');
+    return;
+   }
+   try{
+        setLoading(true);
+        const response=await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/register`,{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+          },
+          body:JSON.stringify({name,email,password,otp,role}),
+          credentials:'include', //include cookies for cors
+        });
+
+        const data= await response.json();
+        if(response.ok){
+          toast.success("OTP sent successfully");
+
+          login({email,role});
+          navigate('/');
+        }
+        else{
+          toast.error(data.message ||"Registration failed");
+        }
+
+    }
+    catch(error){
+      toast.error("Error during registration");
+
+    }
+    finally{
+      setLoading(false);
+    }
+  
   }
   
-  const handleSendOtp=()=>{
-    console.log('Otp sent to',email);
-  };
+  const handleSendOtp= async ()=>{
+    if(!email){
+      toast.error('Please enter valid email');
+      return;
+    }
+    
+  try{
+    setLoading(true);
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/sendotp`, {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+          },
+          body:JSON.stringify({email}),
+          credentials:'include', //include cookies for cors
+        });
 
+        const data= await response.json();
+        if(response.ok){
+          toast.success("OTP sent successfully");
+        }
+
+      }
+      catch(error){
+      toast.error('Error sending OTP');
+      }
+      finally{
+        setLoading(false);
+      }
+  }
 
   return (
     <div className='signup-page'>
