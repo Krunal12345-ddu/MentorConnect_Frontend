@@ -11,15 +11,14 @@ const Login = () => {
   const [loading,setLoading]=useState(false);
 
  const handleSubmit= async (e)=>{
-   e.preventdefault();
+   e.preventDefault();
     if(!email||!password){
      toast.error('All fields are required');
      return;
     }
     setLoading(true);
-    try{
-      
-         const response=await fetch('${process.env.REACT_APP_API_BASE_URL}/auth/login',{
+    try{  
+         const response=await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/login`,{
            method:'POST',
            headers:{
              'Content-Type':'application/json',
@@ -30,9 +29,9 @@ const Login = () => {
  
          const data= await response.json();
          if(response.ok){
-           toast.success("LOgged in successfully");
- 
-           login(data.user);
+           toast.success("Logged in successfully");
+
+           login({"email":data.data.user.email, "role":data.data.user.role});
            navigate('/');
          }
          else{
@@ -41,13 +40,12 @@ const Login = () => {
  
      }
      catch(error){
+        console.log(error)
        toast.error("Error during login");
- 
      }
      finally{
        setLoading(false);
      }
-   
    }
  
   return (
