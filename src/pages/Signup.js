@@ -117,8 +117,8 @@ const Signup = () => {
          required/>
 
          <select value={role} onChange={(e)=>setRole(e.target.value)}>
-         <option value="student">Student</option>
-          <option value="teacher">Teacher</option>
+         <option value="Student">Student</option>
+          <option value="Teacher">Teacher</option>
           
          </select>
     
